@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>DorkChess</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"></link>
+        <link rel="stylesheet" href="{{ url_for('static', filename='libs/chessboard/css/chessboard-0.3.0.css') }}"></link>
+
+
+        <script src="{{ url_for('static',filename='libs/jquery/jquery-3.2.0.min.js') }}"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.2/chess.js"></script>
+         <script type="text/javascript"> $SCRIPT_ROOT = {{ request.script_root|tojson|safe }}; </script>
+         <script type="text/javascript" src="{{ url_for('static',filename='libs/chessboard/js/chessboard-0.3.0.js') }}"></script>
+         <script type="text/javascript" src="{{ url_for('static',filename='libs/chessboard/js/chessboard-0.3.0.min.js') }}"></script>
+         <script type="text/javascript" src="{{ url_for('static',filename='scripts.js') }}"></script>
+
+    </head>
+    <body>
+    <h1>Dork Chess</h1>
+    <div id="board" style="width: 400px"></div>
+    <p>Status: <span id="status"></span></p>
+    <!--<p>FEN: <span id="fen"></span></p>-->
+    <p>PGN: <span id="pgn"></span></p>
+    </body>
+</html>
