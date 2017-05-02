@@ -10,8 +10,9 @@ def index():
 
 @app.route('/move/<path:fen>/')
 def get_move(fen):
-    print(type(fen))
-    return random_response(fen)
+    engine = Engine(fen)
+    move = engine.calculate(3)
+    return move
 
 
 @app.route('/test/<string:tester>')
