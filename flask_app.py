@@ -11,7 +11,7 @@ def index():
 @app.route('/move/<path:fen>/')
 def get_move(fen):
     engine = Engine(fen)
-    move = engine.calculate(3)
+    move = engine.calculate_ab(3)
     return move
 
 

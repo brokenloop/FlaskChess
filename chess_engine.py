@@ -20,6 +20,7 @@ class Engine:
             6:999
         }
         self.board.set_fen(fen)
+        self.leaves_reached = 0
 
 
     def random_response(self):
@@ -48,6 +49,7 @@ class Engine:
             moves = list(self.board.legal_moves)
 
             for move in moves:
+                self.leaves_reached += 1
                 self.board.push(move)
                 new_move, new_score = self.minimax(depth - 1, move, False)
                 if new_score > best_score:
@@ -63,6 +65,7 @@ class Engine:
             moves = list(self.board.legal_moves)
 
             for move in moves:
+                self.leaves_reached += 1
                 self.board.push(move)
                 new_move, new_score = self.minimax(depth - 1, move, True)
                 if new_score < best_score:
@@ -71,13 +74,65 @@ class Engine:
 
             return best_move, best_score
 
+
+    def alpha_beta(self, depth, move, alpha, beta, maximiser):
+        if depth == 0:
+            return move, self.material_eval()
+
+        if maximiser:
+            best_move = None
+
+            moves = list(self.board.legal_moves)
+
+            for move in moves:
+                self.leaves_reached += 1
+                self.board.push(move)
+                new_move, new_score = self.alpha_beta(depth - 1, move, alpha, beta, False)
+                if new_score > alpha:
+                    alpha, best_move = new_score, move
+                self.board.pop()
+                if alpha > beta:
+                    break
+
+            return best_move, alpha
+
+        if not maximiser:
+            best_move = None
+
+            moves = list(self.board.legal_moves)
+
+            for move in moves:
+                self.leaves_reached += 1
+                self.board.push(move)
+                new_move, new_score = self.alpha_beta(depth - 1, move, alpha, beta, True)
+                if new_score < beta:
+                    beta, best_move = new_score, move
+                self.board.pop()
+                if alpha > beta:
+                    break
+
+            return best_move, beta
+
+
     def calculate(self, depth):
         # This shows up true for white & false for black
         maximiser = self.board.turn
 
         best_move, best_score = self.minimax(depth, None, maximiser)
-
         return str(best_move)
+
+
+    def calculate_ab(self, depth):
+        maximiser = self.board.turn
+
+        best_move, best_score = self.alpha_beta(depth, None, -9999, 9999, maximiser)
+        return str(best_move)
+
+
+    def total_leaves(self):
+        leaves = self.leaves_reached
+        self.leaves_reached = 0
+        return leaves
 
 
 if __name__=="__main__":
@@ -85,6 +140,11 @@ if __name__=="__main__":
 
     newengine = Engine(fen)
 
+    # print(newengine.board)
+
     # print(type(newengine.material_eval()))
-    print(newengine.calculate(3))
-    # print(newengine.board.turn)
+    print(newengine.calculate_ab(2))
+    print(newengine.total_leaves())
+    print(newengine.calculate(2))
+    print(newengine.total_leaves())
+    # print(newengine.board)
