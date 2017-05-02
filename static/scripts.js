@@ -26,6 +26,7 @@ var onDrop = function(source, target) {
   if (move === null) return 'snapback';
 
   updateStatus();
+  randomResponse();
 };
 
 // update the board position after the piece snap
@@ -35,7 +36,6 @@ var onSnapEnd = function() {
 };
 
 var updateStatus = function() {
-  console.log("Change")
   var status = '';
 
   var moveColor = 'White';
@@ -80,6 +80,20 @@ var cfg = {
   onSnapEnd: onSnapEnd
 };
 
+var randomResponse = function() {
+    fen = game.fen()
+    $.get($SCRIPT_ROOT + "/move/" + fen, function(data) {
+        game.move(data, {sloppy: true});
+//        board.position(game.fen());
+        updateStatus();
+    })
+}
+
+var testResponse = function(tester) {
+    $.get($SCRIPT_ROOT + "/move/" + tester, function(data) {
+        console.log(data);
+    })
+}
 
 // did this based on a stackoverflow answer
 // http://stackoverflow.com/questions/29493624/cant-display-board-whereas-the-id-is-same-when-i-use-chessboard-js
