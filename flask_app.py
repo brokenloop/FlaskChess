@@ -10,8 +10,11 @@ def index():
 
 @app.route('/move/<path:fen>/')
 def get_move(fen):
+    print("Calculating...")
     engine = Engine(fen)
     move = engine.calculate_ab(3)
+    print("Move found!", move)
+    print()
     return move
 
 
