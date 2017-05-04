@@ -12,17 +12,17 @@ class Engine:
         self.MAX_DEPTH = 60
         self.piece_values = {
             # pawn
-            1:10,
+            1:100,
             # bishop
-            2:30,
+            2:310,
             # knight
-            3:30,
+            3:300,
             # rook
-            4:50,
+            4:500,
             # queen
-            5:90,
+            5:900,
             # king
-            6:9999
+            6:99999
         }
         self.square_table = square_table = {
             1: [
@@ -88,6 +88,8 @@ class Engine:
         }
         self.board.set_fen(fen)
         self.leaves_reached = 0
+        self.best_moves = []
+        self.best_moves_scores = []
 
 
     def random_response(self):
@@ -118,7 +120,7 @@ class Engine:
             b_squares = self.board.pieces(i, chess.BLACK)
             score -= len(b_squares) * self.piece_values[i]
             for square in b_squares:
-                score += self.square_table[i][square]
+                score -= self.square_table[i][square]
 
         return score
 
@@ -162,66 +164,123 @@ class Engine:
             return best_move, best_score
 
 
-    def alpha_beta(self, depth, move, alpha, beta, maximiser):
-        if depth == 0:
+    def alpha_beta(self, depth_neg, depth_pos, move, alpha, beta, maximiser):
+        move_sequence = []
+
+        # check if we're at the final search depth
+        if depth_neg == 0:
             # return move, self.material_eval()
-            return move, self.lazy_eval()
+            move_sequence.append(move)
+            return move_sequence, self.lazy_eval()
+
+        if len(self.best_moves) < depth_pos + 1:
+            self.best_moves.append(None)
+            self.best_moves_scores.append((-10000001 if maximiser else 10000001))
 
 
         moves = list(self.board.legal_moves)
         # moves = self.order_moves()
 
+        # if there are no legal moves, check for checkmate. If not, return stalemate score.
         if not moves:
             if self.board.is_checkmate():
                 if self.board.result() == "1-0":
-                    return move, 1000000
+                    move_sequence.append(move)
+                    return move_sequence, 1000000
                 elif self.board.result() == "0-1":
-                    return move, -1000000
+                    move_sequence.append(move)
+                    return move_sequence, -1000000
             else:
-                return move, 0
+                move_sequence.append(move)
+                return move_sequence, 0
 
-        best_move = moves[0]
+        # initialise best move variables. What are these used for again? I need to simplify the logic here.
+        best_move = None
+        best_score = -10000001 if maximiser else 10000001
+
 
         if maximiser:
             for move in moves:
                 self.leaves_reached += 1
-                self.board.push(move)
-                new_move, new_score = self.alpha_beta(depth - 1, move, alpha, beta, False)
-                if new_score > alpha:
-                    alpha, best_move = new_score, move
-                self.board.pop()
-                if alpha > beta:
-                    break
 
-            return best_move, alpha
+                # get score of the new move, record what it is
+                self.board.push(move)
+                new_sequence, new_score = self.alpha_beta(depth_neg - 1, depth_pos + 1, move, alpha, beta, False)
+                self.board.pop()
+
+                # Check whether the new score is better than the best score. If so, replace the best score.
+                if new_score > best_score:
+                    move_sequence = new_sequence
+                    best_score, best_move = new_score, move
+
+                # Check whether the new score is better than the beta. If it is, return and break the loop.
+                # Need to rethink the check against best here.
+                if new_score >= beta:
+                    # self.check_against_best(best_move, best_score, depth_pos, True)
+                    move_sequence.append(best_move)
+                    return move_sequence, best_score
+                # Update alpha - upper bound
+                if new_score > alpha:
+                    alpha = new_score
+            # return the best of the results
+            # self.check_against_best(best_move, best_score, depth_pos, True)
+            move_sequence.append(best_move)
+            return move_sequence, best_score
 
         if not maximiser:
             for move in moves:
                 self.leaves_reached += 1
+
+                # get score of the new move, record what it is
                 self.board.push(move)
-                new_move, new_score = self.alpha_beta(depth - 1, move, alpha, beta, True)
-                if new_score < beta:
-                    beta, best_move = new_score, move
+                new_sequence, new_score = self.alpha_beta(depth_neg - 1, depth_pos + 1, move, alpha, beta, True)
                 self.board.pop()
-                if alpha > beta:
-                    break
 
-            return best_move, beta
+                # Check whether the new score is better than the best score. If so, replace the best score.
+                if new_score < best_score:
+                    move_sequence = new_sequence
+                    best_score, best_move = new_score, move
 
+                # Check whether the new score is better than the alpha. If it is, return and break the loop
+                if new_score <= alpha:
+                    # self.check_against_best(best_move, best_score, depth_pos, False)
+                    move_sequence.append(best_move)
+                    return move_sequence, best_score
+
+                # update beta - lower bound
+                if new_score < beta:
+                    beta = new_score
+
+            # return the best of the results
+            # self.check_against_best(best_move, best_score, depth_pos, False)
+            move_sequence.append(best_move)
+            return move_sequence, best_score
+
+
+    def check_against_best(self, move, score, depth, max):
+        if max:
+            if score > self.best_moves_scores[depth]:
+                self.best_moves[depth], self.best_moves_scores[depth] = move, score
+        else:
+            if score < self.best_moves_scores[depth]:
+                self.best_moves[depth], self.best_moves_scores[depth] = move, score
 
     def calculate(self, depth):
         # This shows up true for white & false for black
         maximiser = self.board.turn
 
         best_move, best_score = self.minimax(depth, None, maximiser)
+
         return str(best_move)
 
 
     def calculate_ab(self, depth):
         maximiser = self.board.turn
 
-        best_move, best_score = self.alpha_beta(depth, None, -9999, 9999, maximiser)
-        return str(best_move)
+        move_sequence, best_score = self.alpha_beta(depth, 0, None, -10000001, 10000001, maximiser)
+        for i in range(1, len(move_sequence)):
+            print("move", move_sequence[-i])
+        return str(move_sequence[-1])
 
 
     def total_leaves(self):
@@ -236,36 +295,28 @@ class Engine:
         for move in moves:
             self.board.push(move)
             # scores.append(self.material_eval())
-            scores.append(self.lazy_eval())
+            scores.append(self.material_eval())
             self.board.pop()
         sorted_indexes = sorted(range(len(scores)), key=lambda i: scores[i], reverse=False)
         return [moves[i] for i in sorted_indexes]
 
 
-    def iterative_deepening(self, time_limit):
-        signal.alarm(time_limit)
+    def iterative_deepening(self, depth):
+        best_move = self.calculate_ab(1)
+        for i in range(2, depth + 1):
+            best_move = self.calculate_ab(i)
 
-        # This try/except loop ensures that
-        #   you'll catch TimeoutException when it's sent.
-        for i in range(1, self.MAX_DEPTH):
-            try:
-                print("Depth", i)
-                self.calculate_ab(i)
-            except TimeoutException:
-                return str(self.best_move)
-            else:
-                # Reset the alarm
-                signal.alarm(0)
+        return best_move
 
 
-class TimeoutException(Exception):   # Custom exception class
-    print("TIMEOUT")
+    def print_best_sequence(self):
+        print("Best moves are", self.best_moves)
+        print("Best scores are", self.best_moves_scores)
+        self.best_moves = []
+        self.best_moves_scores = []
 
 
-def timeout_handler(signum, frame):   # Custom signal handler
-    raise TimeoutException
 
-signal.signal(signal.SIGALRM, timeout_handler)
 
 
 if __name__=="__main__":
@@ -287,15 +338,15 @@ if __name__=="__main__":
     # start_time = time.time()
     # print(newengine.calculate(3))
     # print(newengine.total_leaves())
-    # # print("Time taken:", time.time() - start_time)
-    #
-    # start_time = time.time()
-    # print(newengine.calculate_ab(3))
-    # print(newengine.total_leaves())
     # print("Time taken:", time.time() - start_time)
-    cProfile.run('newengine.calculate(3)')
 
-    cProfile.run('newengine.calculate_ab(3)')
+    start_time = time.time()
+    print(newengine.calculate_ab(4))
+    print(newengine.total_leaves())
+    print("Time taken:", time.time() - start_time)
+    # cProfile.run('newengine.calculate(3)')
+    #
+    # cProfile.run('newengine.calculate_ab(3)')
 
 
     # print(newengine.board)
