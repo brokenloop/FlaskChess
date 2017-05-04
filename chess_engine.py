@@ -1,10 +1,15 @@
 import chess
 import random
+import signal
+import time
+import cProfile
+from piece_square_tables import *
 
 class Engine:
 
     def __init__(self, fen):
         self.board = chess.Board()
+        self.MAX_DEPTH = 60
         self.piece_values = {
             # pawn
             1:10,
@@ -17,7 +22,69 @@ class Engine:
             # queen
             5:90,
             # king
-            6:999
+            6:9999
+        }
+        self.square_table = square_table = {
+            1: [
+                0, 0, 0, 0, 0, 0, 0, 0,
+                50, 50, 50, 50, 50, 50, 50, 50,
+                10, 10, 20, 30, 30, 20, 10, 10,
+                5, 5, 10, 25, 25, 10, 5, 5,
+                0, 0, 0, 20, 20, 0, 0, 0,
+                5, -5, -10, 0, 0, -10, -5, 5,
+                5, 10, 10, -20, -20, 10, 10, 5,
+                0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            2: [
+                -50, -40, -30, -30, -30, -30, -40, -50,
+                -40, -20, 0, 0, 0, 0, -20, -40,
+                -30, 0, 10, 15, 15, 10, 0, -30,
+                -30, 5, 15, 20, 20, 15, 5, -30,
+                -30, 0, 15, 20, 20, 15, 0, -30,
+                -30, 5, 10, 15, 15, 10, 5, -30,
+                -40, -20, 0, 5, 5, 0, -20, -40,
+                -50, -40, -30, -30, -30, -30, -40, -50,
+            ],
+            3: [
+                -20, -10, -10, -10, -10, -10, -10, -20,
+                -10, 0, 0, 0, 0, 0, 0, -10,
+                -10, 0, 5, 10, 10, 5, 0, -10,
+                -10, 5, 5, 10, 10, 5, 5, -10,
+                -10, 0, 10, 10, 10, 10, 0, -10,
+                -10, 10, 10, 10, 10, 10, 10, -10,
+                -10, 5, 0, 0, 0, 0, 5, -10,
+                -20, -10, -10, -10, -10, -10, -10, -20,
+            ],
+            4: [
+                0, 0, 0, 0, 0, 0, 0, 0,
+                5, 10, 10, 10, 10, 10, 10, 5,
+                -5, 0, 0, 0, 0, 0, 0, -5,
+                -5, 0, 0, 0, 0, 0, 0, -5,
+                -5, 0, 0, 0, 0, 0, 0, -5,
+                -5, 0, 0, 0, 0, 0, 0, -5,
+                -5, 0, 0, 0, 0, 0, 0, -5,
+                0, 0, 0, 5, 5, 0, 0, 0
+            ],
+            5: [
+                -20, -10, -10, -5, -5, -10, -10, -20,
+                -10, 0, 0, 0, 0, 0, 0, -10,
+                -10, 0, 5, 5, 5, 5, 0, -10,
+                -5, 0, 5, 5, 5, 5, 0, -5,
+                0, 0, 5, 5, 5, 5, 0, -5,
+                -10, 5, 5, 5, 5, 5, 0, -10,
+                -10, 0, 5, 0, 0, 0, 0, -10,
+                -20, -10, -10, -5, -5, -10, -10, -20
+            ],
+            6: [
+                -30, -40, -40, -50, -50, -40, -40, -30,
+                -30, -40, -40, -50, -50, -40, -40, -30,
+                -30, -40, -40, -50, -50, -40, -40, -30,
+                -30, -40, -40, -50, -50, -40, -40, -30,
+                -20, -30, -30, -40, -40, -30, -30, -20,
+                -10, -20, -20, -20, -20, -20, -20, -10,
+                20, 20, 0, 0, 0, 0, 20, 20,
+                20, 30, 10, 0, 0, 10, 30, 20
+            ]
         }
         self.board.set_fen(fen)
         self.leaves_reached = 0
@@ -38,9 +105,29 @@ class Engine:
         return score
 
 
+    def lazy_eval(self):
+        score = 0
+        # iterate through the pieces
+        for i in range(1, 7):
+            # eval white pieces
+            w_squares = self.board.pieces(i, chess.WHITE)
+            score += len(w_squares) * self.piece_values[i]
+            for square in w_squares:
+                score += self.square_table[i][-square]
+
+            b_squares = self.board.pieces(i, chess.BLACK)
+            score -= len(b_squares) * self.piece_values[i]
+            for square in b_squares:
+                score += self.square_table[i][square]
+
+        return score
+
+
+
     def minimax(self, depth, move, maximiser):
         if depth == 0:
-            return move, self.material_eval()
+            # return move, self.material_eval()
+            return move, self.lazy_eval()
 
         if maximiser:
             best_move = None
@@ -77,10 +164,12 @@ class Engine:
 
     def alpha_beta(self, depth, move, alpha, beta, maximiser):
         if depth == 0:
-            return move, self.material_eval()
+            # return move, self.material_eval()
+            return move, self.lazy_eval()
+
 
         moves = list(self.board.legal_moves)
-
+        # moves = self.order_moves()
 
         if not moves:
             if self.board.is_checkmate():
@@ -142,21 +231,71 @@ class Engine:
 
 
     def order_moves(self):
-        moves = self.board.legal_moves
+        moves = list(self.board.legal_moves)
+        scores = []
+        for move in moves:
+            self.board.push(move)
+            # scores.append(self.material_eval())
+            scores.append(self.lazy_eval())
+            self.board.pop()
+        sorted_indexes = sorted(range(len(scores)), key=lambda i: scores[i], reverse=False)
+        return [moves[i] for i in sorted_indexes]
 
 
+    def iterative_deepening(self, time_limit):
+        signal.alarm(time_limit)
+
+        # This try/except loop ensures that
+        #   you'll catch TimeoutException when it's sent.
+        for i in range(1, self.MAX_DEPTH):
+            try:
+                print("Depth", i)
+                self.calculate_ab(i)
+            except TimeoutException:
+                return str(self.best_move)
+            else:
+                # Reset the alarm
+                signal.alarm(0)
+
+
+class TimeoutException(Exception):   # Custom exception class
+    print("TIMEOUT")
+
+
+def timeout_handler(signum, frame):   # Custom signal handler
+    raise TimeoutException
+
+signal.signal(signal.SIGALRM, timeout_handler)
 
 
 if __name__=="__main__":
-    fen = "rnbqkbnr/ppppp1pp/8/5P2/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 2"
+    fen = "r2qkbr1/ppp1pppp/2n1b2n/8/8/5P2/PPPP2PP/RNB1KBNR b KQq - 0 6"
 
     newengine = Engine(fen)
 
-    # print(newengine.board)
+    # squares = newengine.board.pieces(1, chess.WHITE)
+    # for square in squares:
+    #     print (square)
+    # print(squares)
 
-    # print(type(newengine.material_eval()))
-    print(newengine.calculate_ab(2))
-    print(newengine.total_leaves())
-    print(newengine.calculate(2))
-    print(newengine.total_leaves())
+    # print(newengine.board)
+    # print(newengine.order_moves())
+
+    # print(newengine.material_eval())
+    # print(newengine.lazy_eval())
+
+    # start_time = time.time()
+    # print(newengine.calculate(3))
+    # print(newengine.total_leaves())
+    # # print("Time taken:", time.time() - start_time)
+    #
+    # start_time = time.time()
+    # print(newengine.calculate_ab(3))
+    # print(newengine.total_leaves())
+    # print("Time taken:", time.time() - start_time)
+    cProfile.run('newengine.calculate(3)')
+
+    cProfile.run('newengine.calculate_ab(3)')
+
+
     # print(newengine.board)

@@ -29,7 +29,7 @@ var onDrop = function(source, target) {
 
   updateStatus();
   getResponseMove();
-  console.log(previous_moves.length)
+  console.log(game.fen())
 };
 
 // update the board position after the piece snap
