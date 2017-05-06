@@ -88,8 +88,6 @@ class Engine:
         }
         self.board.set_fen(fen)
         self.leaves_reached = 0
-        self.best_moves = []
-        self.best_moves_scores = []
 
 
     def random_response(self):
@@ -107,7 +105,7 @@ class Engine:
         return score
 
 
-    def lazy_eval(self):
+    def position_eval(self):
         score = 0
         # iterate through the pieces
         for i in range(1, 7):
@@ -129,7 +127,7 @@ class Engine:
     def minimax(self, depth, move, maximiser):
         if depth == 0:
             # return move, self.material_eval()
-            return move, self.lazy_eval()
+            return move, self.position_eval()
 
         if maximiser:
             best_move = None
@@ -164,24 +162,21 @@ class Engine:
             return best_move, best_score
 
 
-    def alpha_beta(self, depth_neg, depth_pos, move, alpha, beta, maximiser):
+    def alpha_beta(self, depth_neg, depth_pos, move, alpha, beta, prev_moves, maximiser):
+
         move_sequence = []
 
         # check if we're at the final search depth
         if depth_neg == 0:
             # return move, self.material_eval()
             move_sequence.append(move)
-            return move_sequence, self.lazy_eval()
-
-        if len(self.best_moves) < depth_pos + 1:
-            self.best_moves.append(None)
-            self.best_moves_scores.append((-10000001 if maximiser else 10000001))
+            return move_sequence, self.position_eval()
 
 
         moves = list(self.board.legal_moves)
         # moves = self.order_moves()
 
-        # if there are no legal moves, check for checkmate. If not, return stalemate score.
+        # if there are no legal moves, check for checkmate / stalemate
         if not moves:
             if self.board.is_checkmate():
                 if self.board.result() == "1-0":
@@ -198,6 +193,15 @@ class Engine:
         best_move = None
         best_score = -10000001 if maximiser else 10000001
 
+        # put the last calculated best move in first place of the list. Hopefully this improves pruning.
+        if prev_moves and len(prev_moves) >= depth_neg:
+            if depth_neg == 4 and not self.board.turn:
+                print(prev_moves[depth_neg - 1])
+            if prev_moves[depth_neg - 1] in moves:
+                # if not self.board.turn:
+                #     print(prev_moves[depth_neg - 1])
+                moves.insert(0, prev_moves[depth_neg - 1])
+
 
         if maximiser:
             for move in moves:
@@ -205,7 +209,7 @@ class Engine:
 
                 # get score of the new move, record what it is
                 self.board.push(move)
-                new_sequence, new_score = self.alpha_beta(depth_neg - 1, depth_pos + 1, move, alpha, beta, False)
+                new_sequence, new_score = self.alpha_beta(depth_neg - 1, depth_pos + 1, move, alpha, beta, prev_moves, False)
                 self.board.pop()
 
                 # Check whether the new score is better than the best score. If so, replace the best score.
@@ -233,7 +237,7 @@ class Engine:
 
                 # get score of the new move, record what it is
                 self.board.push(move)
-                new_sequence, new_score = self.alpha_beta(depth_neg - 1, depth_pos + 1, move, alpha, beta, True)
+                new_sequence, new_score = self.alpha_beta(depth_neg - 1, depth_pos + 1, move, alpha, beta, prev_moves, True)
                 self.board.pop()
 
                 # Check whether the new score is better than the best score. If so, replace the best score.
@@ -256,16 +260,7 @@ class Engine:
             move_sequence.append(best_move)
             return move_sequence, best_score
 
-
-    def check_against_best(self, move, score, depth, max):
-        if max:
-            if score > self.best_moves_scores[depth]:
-                self.best_moves[depth], self.best_moves_scores[depth] = move, score
-        else:
-            if score < self.best_moves_scores[depth]:
-                self.best_moves[depth], self.best_moves_scores[depth] = move, score
-
-    def calculate(self, depth):
+    def calculate_minimax(self, depth):
         # This shows up true for white & false for black
         maximiser = self.board.turn
 
@@ -277,7 +272,7 @@ class Engine:
     def calculate_ab(self, depth):
         maximiser = self.board.turn
 
-        move_sequence, best_score = self.alpha_beta(depth, 0, None, -10000001, 10000001, maximiser)
+        move_sequence, best_score = self.alpha_beta(depth, 0, None, -10000001, 10000001, None, maximiser)
         for i in range(1, len(move_sequence)):
             print("move", move_sequence[-i])
         return str(move_sequence[-1])
@@ -302,27 +297,24 @@ class Engine:
 
 
     def iterative_deepening(self, depth):
-        best_move = self.calculate_ab(1)
+        # depth_neg, depth_pos, move, alpha, beta, prev_moves, maximiser)
+        move_list, score  = self.alpha_beta(1, 0, None, -10000001, 10000001, None, self.board.turn)
         for i in range(2, depth + 1):
-            best_move = self.calculate_ab(i)
-
-        return best_move
-
-
-    def print_best_sequence(self):
-        print("Best moves are", self.best_moves)
-        print("Best scores are", self.best_moves_scores)
-        self.best_moves = []
-        self.best_moves_scores = []
+            print("Iteration", i)
+            move_list, score = self.alpha_beta(i, 0, None, -10000001, 10000001, move_list, self.board.turn)
+        print("Depth calculated:", len(move_list))
+        return str(move_list[-1])
 
 
 
-
-
+# This is being used for testing at the moment, which is why there is so much commented code.
+# Will move to a standalone testing script when I get the chance.
 if __name__=="__main__":
+
     fen = "r2qkbr1/ppp1pppp/2n1b2n/8/8/5P2/PPPP2PP/RNB1KBNR b KQq - 0 6"
 
     newengine = Engine(fen)
+
 
     # squares = newengine.board.pieces(1, chess.WHITE)
     # for square in squares:
@@ -342,6 +334,11 @@ if __name__=="__main__":
 
     start_time = time.time()
     print(newengine.calculate_ab(4))
+    print(newengine.total_leaves())
+    print("Time taken:", time.time() - start_time)
+
+    start_time = time.time()
+    print(newengine.iterative_deepening(4))
     print(newengine.total_leaves())
     print("Time taken:", time.time() - start_time)
     # cProfile.run('newengine.calculate(3)')

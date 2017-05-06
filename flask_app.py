@@ -12,9 +12,8 @@ def index():
 def get_move(fen):
     print("Calculating...")
     engine = Engine(fen)
-    move = engine.calculate_ab(4)
-    # engine.print_best_sequence()
-    # print("Move found!", move)
+    move = engine.iterative_deepening(4)
+    print("Move found!", move)
     print()
     return move
 
