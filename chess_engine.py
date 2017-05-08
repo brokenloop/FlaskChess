@@ -3,7 +3,6 @@ import random
 import signal
 import time
 import cProfile
-from piece_square_tables import *
 
 class Engine:
 
@@ -198,6 +197,7 @@ class Engine:
             if depth_neg == 4 and not self.board.turn:
                 print(prev_moves[depth_neg - 1])
             if prev_moves[depth_neg - 1] in moves:
+            # if prev_moves[depth_neg - 1] in self.board.legal_moves:
                 # if not self.board.turn:
                 #     print(prev_moves[depth_neg - 1])
                 moves.insert(0, prev_moves[depth_neg - 1])
