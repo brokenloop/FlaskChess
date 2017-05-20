@@ -3,6 +3,10 @@
     <head>
         <meta charset="UTF-8">
         <title>DorkChess</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.1/bootstrap-table.min.js"></script>
+
+
         <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"></link>
         <link rel="stylesheet" href="{{ url_for('static', filename='libs/chessboard/css/chessboard-0.3.0.css') }}"></link>
         <!-- Latest compiled and minified CSS -->
@@ -11,11 +15,13 @@
         <!-- Optional theme -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
               integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.1/bootstrap-table.min.css">
+
         <!-- Latest compiled and minified JavaScript -->
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
         integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
-        <script src="{{ url_for('static',filename='libs/jquery/jquery-3.2.0.min.js') }}"></script>
+
         <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.2/chess.js"></script>
          <script type="text/javascript"> $SCRIPT_ROOT = {{ request.script_root|tojson|safe }}; </script>
          <script type="text/javascript" src="{{ url_for('static',filename='libs/chessboard/js/chessboard-0.3.0.js') }}"></script>
@@ -26,7 +32,7 @@
     <body>
     <nav class="navbar navbar-default navbar-fixed-top">
       <div class="container-fluid">
-          <h1>Dork Chess</h1>
+          <h1>DorkChess</h1>
       </div>
     </nav>
     <div class="container">
@@ -40,10 +46,21 @@
             </div>
             <div class="col-sm-5 col-md-6">
                 <div id="secondWindow">
-                    <h3>Status: <span id="status"></span></h3>
-                    <p>PGN: <span id="pgn"></span></p>
+                    <h3><span id="status"></span></h3>
+                    <div id="moveTable">
+                        <table class="table table-striped table-condensed" id="pgn">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>White</th>
+                                    <th>Black</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
                     <div id="controls">
-                        <input type="button" id="backBtn" onclick="backOneMove();" value="Back Button"/>
+                        <button type="button" class="btn btn-default" id="backBtn" onclick="takeBack()";>Take Back</button>
+                        <button type="button" class="btn btn-default" id="reset" onclick="reset()";>New Game</button>
                     </div>
                 </div>
             </div>

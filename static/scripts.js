@@ -4,7 +4,6 @@ var board,
   fenEl = $('#fen'),
   pgnEl = $('#pgn');
 
-var previous_moves = []
 
 // do not pick up pieces if the game is over
 // only pick up pieces for the side to move
@@ -29,7 +28,6 @@ var onDrop = function(source, target) {
 
   updateStatus();
   getResponseMove();
-  console.log(game.fen())
 };
 
 // update the board position after the piece snap
@@ -66,15 +64,14 @@ var updateStatus = function() {
     }
   }
 
-  document.getElementById("status").innerHTML = status;
-//  document.getElementById("fen").innerHTML = game.fen();
-  document.getElementById("pgn").innerHTML = game.pgn();
+  setStatus(status);
+//  setPGN();
+  createTable();
+  updateScroll();
 
   statusEl.html(status);
   fenEl.html(game.fen());
   pgnEl.html(game.pgn());
-
-  previous_moves.push(game.fen())
 };
 
 var cfg = {
@@ -112,10 +109,101 @@ setTimeout(function() {
     updateStatus();
 }, 0);
 
-var backOneMove = function() {
-    fen = previous_moves[previous_moves.length - 2];
-    game.load(fen)
-    board.position(game.fen());
-    previous_moves.pop();
-    console.log("Button");
+//var setPGN = function() {
+//  document.getElementById("pgn").innerHTML = game.pgn();
+//}
+
+var setPGN = function() {
+  var table = document.getElementById("pgn");
+
+  var pgn = game.pgn().split(" ");
+  console.log(pgn);
+
+    var move = pgn[pgn.length - 1];
+
+    console.log(move);
+
+
+//  for (var i = 0; i < pgn.length; i++) {
+//     if (i % 3 == 0) {
+//        var moveNumber = pgn[i];
+//        var row = table.insertRow(0);
+//        var cell1 = row.insertCell(0);
+//        var cell2 = row.insertCell(1);
+//        var cell3 = row.insertCell(2)
+//        cell1.innerHTML = moveNumber;
+//     } else if (i % 3 == 1) {
+//        var whiteMove = pgn[i];
+//        cell2.innerHTML = whiteMove;
+//     } else if (i % 3 == 2) {
+//        var blackMove = pgn[i];
+//        cell3.innerHTML = blackMove;
+//     }
+//  }
 }
+
+var createTable = function() {
+
+    var pgn = game.pgn().split(" ");
+
+    var data = [];
+
+    for (i = 0; i < pgn.length; i += 3) {
+        var index = i / 3;
+        data[index] = {};
+        for (j = 0; j < 3; j++) {
+            var label = "";
+            if (j === 0) {
+                label = "moveNumber";
+            } else if (j === 1) {
+                label = "whiteMove";
+            } else if (j === 2) {
+                label = "blackMove";
+            }
+            if (pgn.length > i + j) {
+                data[index][label] = pgn[i + j];
+            } else {
+                data[index][label] = "";
+            }
+        }
+    }
+
+    //var data = [{moveNumber: "1.", whiteMove: "e4", blackMove: "e5"},
+    //          {moveNumber: "2.", whiteMove: "e4", blackMove: "e5"}];
+
+    $('#pgn tr').not(':first').not(':last').remove();
+    var html = '';
+    for (var i = 0; i < data.length; i++) {
+                console.log(data[i])
+                html += '<tr><td>' + data[i].moveNumber + '</td><td>'
+                + data[i].whiteMove + '</td><td>'
+                + data[i].blackMove + '</td></tr>';
+    }
+
+    $('#pgn tr').first().after(html);
+}
+
+var updateScroll = function() {
+    $('#moveTable').scrollTop($('#moveTable')[0].scrollHeight);
+}
+
+var setStatus = function(status) {
+  document.getElementById("status").innerHTML = status;
+}
+
+var takeBack = function() {
+    game.undo();
+    if (game.turn() != "w") {
+        game.undo();
+    }
+    board.position(game.fen());
+    updateStatus();
+}
+
+var reset = function() {
+    game.reset();
+    board.start();
+    updateStatus();
+}
+
+

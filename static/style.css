@@ -1,5 +1,5 @@
 #board {
-    padding-top: 10px;
+    padding: 10px;
     max-width: 500px;
 }
 
@@ -10,9 +10,15 @@
 #mainWindow {
 }
 #secondWindow {
-    padding-top: 5px;
-    padding-right: 5px;
+
+    max-width: 300px;
+    margin: 10px;
     min-height: 350px;
+}
+
+#moveTable {
+    max-height: 250px;
+    overflow: auto;
 }
 
 body {
