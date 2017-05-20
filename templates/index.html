@@ -5,7 +5,15 @@
         <title>DorkChess</title>
         <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"></link>
         <link rel="stylesheet" href="{{ url_for('static', filename='libs/chessboard/css/chessboard-0.3.0.css') }}"></link>
-
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+              integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+              integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+        <!-- Latest compiled and minified JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+        integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
         <script src="{{ url_for('static',filename='libs/jquery/jquery-3.2.0.min.js') }}"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.2/chess.js"></script>
@@ -16,11 +24,30 @@
 
     </head>
     <body>
-    <h1>Dork Chess</h1>
-    <div id="board" style="width: 400px"></div>
-    <p>Status: <span id="status"></span></p>
-    <!--<p>FEN: <span id="fen"></span></p>-->
-    <p>PGN: <span id="pgn"></span></p>
-    <input type="button" id="backBtn" onclick="backOneMove();" value="Back Button"/>
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container-fluid">
+          <h1>Dork Chess</h1>
+      </div>
+    </nav>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-7 col-md-6">
+                <div id="mainWindow">
+                    <div id="piecesB"></div>
+                    <div id="board"></div>
+                    <div id="piecesW"></div>
+                </div>
+            </div>
+            <div class="col-sm-5 col-md-6">
+                <div id="secondWindow">
+                    <h3>Status: <span id="status"></span></h3>
+                    <p>PGN: <span id="pgn"></span></p>
+                    <div id="controls">
+                        <input type="button" id="backBtn" onclick="backOneMove();" value="Back Button"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     </body>
 </html>

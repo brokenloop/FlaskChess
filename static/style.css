@@ -1,0 +1,26 @@
+#board {
+    padding-top: 10px;
+    max-width: 500px;
+}
+
+.navbar {
+    background-color: red;
+}
+
+#mainWindow {
+}
+#secondWindow {
+    padding-top: 5px;
+    padding-right: 5px;
+    min-height: 350px;
+}
+
+body {
+    padding-top: 70px;
+    align-items: center;
+}
+
+#controls {
+    position: absolute;
+    bottom: 0;
+}
