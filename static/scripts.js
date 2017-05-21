@@ -65,6 +65,7 @@ var updateStatus = function() {
   }
 
   setStatus(status);
+  getLastCapture();
   createTable();
   updateScroll();
 
@@ -93,7 +94,6 @@ var randomResponse = function() {
 var getResponseMove = function() {
     var e = document.getElementById("sel1");
     var depth = e.options[e.selectedIndex].value;
-    console.log("Depth:", depth);
     fen = game.fen()
     $.get($SCRIPT_ROOT + "/move/" + depth + "/" + fen, function(data) {
         game.move(data, {sloppy: true});
@@ -117,9 +117,7 @@ var setPGN = function() {
   var table = document.getElementById("pgn");
 
   var pgn = game.pgn().split(" ");
-  console.log(pgn);
     var move = pgn[pgn.length - 1];
-    console.log(move);
 }
 
 var createTable = function() {
@@ -151,7 +149,6 @@ var createTable = function() {
     $('#pgn tr').not(':first').not(':last').remove();
     var html = '';
     for (var i = 0; i < data.length; i++) {
-                console.log(data[i])
                 html += '<tr><td>' + data[i].moveNumber + '</td><td>'
                 + data[i].whiteMove + '</td><td>'
                 + data[i].blackMove + '</td></tr>';
@@ -178,10 +175,27 @@ var takeBack = function() {
 }
 
 var newGame = function() {
-    console.log("hit!");
     game.reset();
     board.start();
     updateStatus();
+}
+
+var getCapturedPieces = function() {
+    var history = game.history({ verbose: true });
+    for (var i = 0; i < history.length; i++) {
+        if ("captured" in history[i]) {
+            console.log(history[i]["captured"]);
+        }
+    }
+}
+
+var getLastCapture = function() {
+    var history = game.history({ verbose: true });
+    var index = history.length - 1;
+
+    if ("captured" in history[index]) {
+        console.log(history[index]["captured"]);
+    }
 }
 
 
