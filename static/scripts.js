@@ -33,9 +33,7 @@ var onDrop = function(source, target) {
 // update the board position after the piece snap
 // for castling, en passant, pawn promotion
 var onSnapEnd = function() {
-  if (game.turn() === 'w') {
-//    board.position(game.fen());
-  }
+    board.position(game.fen());
 };
 
 var updateStatus = function() {
