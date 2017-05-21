@@ -8,11 +8,12 @@ def index():
     return render_template("index.html")
 
 
-@app.route('/move/<path:fen>/')
-def get_move(fen):
+@app.route('/move/<int:depth>/<path:fen>/')
+def get_move(depth, fen):
+    print(depth)
     print("Calculating...")
     engine = Engine(fen)
-    move = engine.iterative_deepening(4)
+    move = engine.iterative_deepening(depth - 1)
     print("Move found!", move)
     print()
     return move

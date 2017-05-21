@@ -32,7 +32,7 @@
     <body>
     <nav class="navbar navbar-default navbar-fixed-top">
       <div class="container-fluid">
-          <h1>DorkChess</h1>
+          <h1 id="logo">DorkChess</h1>
       </div>
     </nav>
     <div class="container">
@@ -59,8 +59,22 @@
                         </table>
                     </div>
                     <div id="controls">
-                        <button type="button" class="btn btn-default" id="backBtn" onclick="takeBack()";>Take Back</button>
-                        <button type="button" class="btn btn-default" id="reset" onclick="reset()";>New Game</button>
+                        <form class="form-inline">
+
+                            <button type="button" class="btn btn-default" id="backBtn" onclick="takeBack()";
+                                    data-tooltip="I’m the tooltip text.">Take Back</button>
+                                <!--<span class="tooltiptext">Tooltip text</span>-->
+
+                            <button type="button" class="btn btn-default" id="reset" onclick="reset()";
+                                    data-tooltip="I’m the tooltip text.">New Game</button>
+                            <select class="form-control" id="sel1">
+                                <option value="5">Depth: 5</option>
+                                <option value="4">Depth: 4</option>
+                                <option value="3">Depth: 3</option>
+                                <option value="2">Depth: 2</option>
+                                <option value="1">Depth: 1</option>
+                            </select>
+                        </form>
                     </div>
                 </div>
             </div>
