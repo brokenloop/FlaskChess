@@ -86,7 +86,6 @@ var randomResponse = function() {
     fen = game.fen()
     $.get($SCRIPT_ROOT + "/move/" + fen, function(data) {
         game.move(data, {sloppy: true});
-//        board.position(game.fen());
         updateStatus();
     })
 }
@@ -94,11 +93,10 @@ var randomResponse = function() {
 var getResponseMove = function() {
     var e = document.getElementById("sel1");
     var depth = e.options[e.selectedIndex].value;
-    console.log("Depth:", depth);
     fen = game.fen()
     $.get($SCRIPT_ROOT + "/move/" + depth + "/" + fen, function(data) {
         game.move(data, {sloppy: true});
-        board.position(game.fen());
+//        board.position(game.fen());
         updateStatus();
     })
 
@@ -182,7 +180,8 @@ var takeBack = function() {
     updateStatus();
 }
 
-var reset = function() {
+var newGame = function() {
+    console.log("hit!");
     game.reset();
     board.start();
     updateStatus();
