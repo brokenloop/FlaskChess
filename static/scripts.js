@@ -5,31 +5,6 @@ var board,
   pgnEl = $('#pgn');
 
 
-// do not pick up pieces if the game is over
-// only pick up pieces for the side to move
-var onDragStart = function(source, piece, position, orientation) {
-  if (game.game_over() === true ||
-      (game.turn() === 'w' && piece.search(/^b/) !== -1) ||
-      (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
-    return false;
-  }
-};
-
-var onDrop = function(source, target) {
-  // see if the move is legal
-  var move = game.move({
-    from: source,
-    to: target,
-    promotion: 'q' // NOTE: always promote to a queen for example simplicity
-  });
-
-  // illegal move
-  if (move === null) return 'snapback';
-
-  updateStatus();
-  getResponseMove();
-};
-
 // update the board position after the piece snap
 // for castling, en passant, pawn promotion
 var onSnapEnd = function() {
@@ -77,20 +52,10 @@ var updateStatus = function() {
 var cfg = {
   draggable: true,
   position: 'start',
-  onDragStart: onDragStart,
-  onDrop: onDrop,
   onSnapEnd: onSnapEnd
 };
 
-var randomResponse = function() {
-    fen = game.fen()
-    $.get($SCRIPT_ROOT + "/move/" + fen, function(data) {
-        game.move(data, {sloppy: true});
-//        board.position(game.fen());
-        updateStatus();
-    })
-}
-
+/*
 var getResponseMove = function() {
     var e = document.getElementById("sel1");
     var depth = e.options[e.selectedIndex].value;
@@ -103,6 +68,7 @@ var getResponseMove = function() {
         setTimeout(function(){ board.position(game.fen()); }, 100);
     })
 }
+*/
 
 
 // did this based on a stackoverflow answer
@@ -165,19 +131,38 @@ var setStatus = function(status) {
   document.getElementById("status").innerHTML = status;
 }
 
-var takeBack = function() {
-    game.undo();
-    if (game.turn() != "w") {
-        game.undo();
-    }
-    board.position(game.fen());
-    updateStatus();
-}
+var nextMove = function() {
+  console.log("next move!");
+  $.get($SCRIPT_ROOT + "/next/", function(data) {
 
-var newGame = function() {
-    game.reset();
-    board.start();
-    updateStatus();
+    console.log("Data from server = " + data);
+
+    var lines = data.split("\n");
+    var action = lines[0];
+    var move_history, notes;
+
+    if ("finished" === action) {
+      notes = "<h1>Finished</h1>" + lines[1];
+    } else {
+      
+      // Find the FEN in line 2
+      fen = lines[1]
+      moves = lines[2];
+      notes = lines[3];
+
+      console.log(notes);
+      // Reset the board with Forsyth-Edwards notation
+      board.position(fen);
+
+      $('#moves').html(moves)
+      var rewind = ""
+      /*
+      if ("rewind" === action) {
+        notes = "Rewind";
+      }*/
+    }
+    $('#notes').html(notes);
+  })
 }
 
 var getCapturedPieces = function() {
@@ -190,6 +175,7 @@ var getCapturedPieces = function() {
 }
 
 var getLastCapture = function() {
+  
     var history = game.history({ verbose: true });
     var index = history.length - 1;
 
@@ -197,7 +183,3 @@ var getLastCapture = function() {
         console.log(history[index]["captured"]);
     }
 }
-
-
-
-

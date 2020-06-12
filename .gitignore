@@ -40,3 +40,7 @@ tmtagsHistory
 *.sublime-workspace
 .bundle
 notes/
+
+# Virtual environment #
+#######################
+flask-chess/

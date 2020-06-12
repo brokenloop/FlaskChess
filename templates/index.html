@@ -47,34 +47,18 @@
             </div>
             <div class="col-xs-12 col-sm-6">
                 <div id="secondWindow">
-                    <h3><span id="status"></span></h3>
-                    <div id="moveTable">
-                        <table class="table table-striped table-condensed" id="pgn">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>White</th>
-                                    <th>Black</th>
-                                </tr>
-                            </thead>
-                        </table>
-                    </div>
                     <div id="controls">
                         <form class="form-inline">
-
-                            <button type="button" class="btn btn-default" id="backBtn" onclick="takeBack()";>Take Back</button>
-                            <button type="button" class="btn btn-default" id="reset" onclick="newGame()";>New Game</button>
-                            <select class="form-control" id="sel1">
-                                <option value="5">Depth: 5</option>
-                                <option value="4">Depth: 4</option>
-                                <option value="3">Depth: 3</option>
-                                <option value="2">Depth: 2</option>
-                                <option value="1">Depth: 1</option>
-                            </select>
+                            <button type="button" class="btn btn-default" id="nextBtn" onclick="nextMove()";>Next</button>
                         </form>
+                    </div>
+                    <h3>Moves</h3>
+                    <div id="moves">
                     </div>
                 </div>
             </div>
+        </div>
+        <div id="notes">
         </div>
     </div>
     </body>
