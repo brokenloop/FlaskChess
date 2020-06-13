@@ -1,0 +1,88 @@
+1. e4 The Damiano defence starts with the King's pawn opening (1.e4), then the Open Game (1...e5), then the King's knight opening (2.Nf3). <strong>branching</strong>
+1...e5
+2. Nf3
+2...f6 This blunder (2...f6?) is the Damiano defence. It is a weak move that exposes Black's king, weakens Black's kingside and takes away his knight's best square. <strong>branching</strong>
+3. d4 Here is one strong reply (3.d4).
+3. Bc4 Here is another strong reply (3.Bc4 d6 4.d4 Nc6 5.c3), "after which Black chokes to death."
+3...d6
+4. d4
+4...Nc6
+5. c3
+3. Nxe5! Most forceful, and stronger than these two replies, is the knight sacrifice (3.Nxe5!).
+3...fxe5? Taking the knight (3...fxe5?) exposes Black to a deadly attack (4.Qh5+), which is the main purpose of this video.
+4. Qh5+ Black King is exposed and in check. <strong>branching</strong>
+4...g6 Shielding the King (4...g6) loses to another check (5.Qxe5+), forking king and rook, leaving Black down the exchange (though other options are worse).
+5. Qxe5+
+5...Be7
+6. Qxh8
+4...Ke7 Let's resume the deadly attack, where White harasses the King (4.Qh5+ Ke7 5.Qxe5+ Kf7 6.Bc4+).
+5. Qxe5+
+5...Kf7
+6. Bc4+
+6...Kg6?? If Black blunders (6...Kg6??), then White can mate quickly (7.Qf5+).
+7. Qf5+
+7...Kh6
+8. d3
+8...Qg5
+9. Qg5#
+6...d5! Black can avoid the blunder and sacrifice another pawn, and the deadly attack continues (4.Qh5+ Ke7 5.Qxe5+ Kf7 6.Bc4+ d5! 7.Bxd5+ Kg6), and now Black is down three pawns for one piece.
+7. Bxd5+
+7...Kg6 <strong>branching</strong>
+8. d4? If White blunders (8.d4? Bd6!), it loses the Queen, which has nowhere to go.
+8...Bd6!
+8. h4 The deadly attack continues (3...fxe5? 4.Qh5+ Ke7 5.Qxe5+ Kf7 6.Bc4+ d5! 7.Bxd5+ Kg6 8.h4). The move to h4 calls for an advance of the pawn, which decreases the Black King's options for escaping. <strong>branching</strong>
+8...h6 Black responds with a pawn advance, either one (8...h6) or two squares (8...h5) with a similar result. The difference is that if Black takes the Bishop gambit, then White mates in one. Let's explore one square first (8...h6): White offers the Bishop, and if Black takes it (9...Bxb7) then White mates (10.Qf5#).
+9. Bxb7
+9...Bxb7
+10. Qf5#
+8...h5 Now consider Black's advance with two squares (8..h5) and continue the deadly attack (3...fxe5? 4.Qh5+ Ke7 5.Qxe5+ Kf7 6.Bc4+ d5! 7.Bxd5+ Kg6 8.h4 h5 9.Bxb7!). White claims a fourth pawn.
+9. Bxb7 Will Black take the bait of the Bishop? <strong>branching</strong>
+9...Bxb7 If it does (9...Bxb7), it releases f5 and White harasses Black (10.Qf5+ Kh6 11.d4+ g5) and the nice move of Queen to f7 (12.Qf7!) mates quickly.
+10. Qf5+
+10...Kh6
+11. d4+
+11...g5
+12. Qf7!
+12...Bxe4 Here is one example of a quick mate following 12.Qf7! (from the strongest level of Chess.app).
+13. Bxg5+
+13...Qxg5
+14. hxg5+
+14...Kxg5
+15. f4+
+15...Kh6
+16. Rh5#
+9...Bd6 Let's continue the deadly attack (3...fxe5? 4.Qh5+ Ke7 5.Qxe5+ Kf7 6.Bc4+ d5! 7.Bxd5+ Kg6 8.h4 h5 9.Bxb7! Bd6 10.Qa5!), where Black wants to dislodge the White Queen.
+10. Qa5! Will Black take the Bishop gambit now? <strong>branching</strong>
+10...Bxb7 If it does, then we come to a similar position as before with a quick mate.
+11. Qf5+
+11...Kh6
+12. d4+
+12...g5
+13. Qf7!
+10...Nc6 So Black should not take the Bishop gambit. Black's best response is to offer its knight and save the rook (10...Nc6 11.Bxc6 Rb8), after which White has regained its sacrificed knight. This concludes the deadly attack (3...fxe5? 4.Qh5+ Ke7 5.Qxe5+ Kf7 6.Bc4+ d5! 7.Bxd5+ Kg6 8.h4 h5 9.Bxb7! Bd6 10.Qa5!), and White is ahead by four pawns. White has a clearly winning position. White can continue developing his pieces or can take another pawn (Qxa7), which gives this deadly attack the name "five pawns gambit".
+11. Bxc6
+11...Rb8
+12. Qxa7
+3...d5 So, taking the knight (3...fxe5?) is fatal. Another poor move for Black is pawn to d5, and White follows a similar attack and is up by two pawns (3...d5 4. Qh5+! g6 5. Nxg6!).
+4. Qh5+!
+4...g6
+5. Nxg6!
+3...Qe7! Since taking the knight is fatal, Black should instead play Queen to e7 (3...Qe7!). <strong>branching</strong>
+4. Qh5+? A similar attack for White with the Black Queen in e7 is now a blunder (4.Qh5+? g6 5.Nxg6 Qxe4+ 6.Be2 Qxg6) and Black is ahead a piece for a pawn.
+4...g6
+5. Nxg6
+5...Qxe4+
+6. Be2
+6...Qxg6
+4. Nf3 So the best move for White is to retreat the Knight (4.Nf3 Qxe4+ 5.Be2) and Black regains the pawn but has lost time and weakened his kingside, and will lose more time when White chases the queen with Nc3, or 0-0, Re1, and a move by the bishop on e2. <strong>branching</strong>
+4...Qxe4+
+5. Be2
+4...d5 Another alternative for Black is pawn to d5 and then White had a small advantage (4...d5 5.d3 dxe4 6.dxe4).
+5. d3
+5...dxe4
+6. dxe4
+2...a6?! Since Black can only regain the pawn with Queen to e7 (3...Qe7!), then the Damiano blunder of pawn to f6 (2...f6?) did not really defend the e-pawn at all. Indeed, even a relatively useless move like pawn to a6 (2...a6?!) is less risky and Black could still regain the pawn (2...a6?! 3.Nxe5 Qe7 4.d4 d6) without weakening his kingside or depriving his king's knight of its best square.
+3. Nxe5
+3...Qe7
+4. d4
+4...d6
