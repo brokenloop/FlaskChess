@@ -19,12 +19,24 @@
 5. Qxe5+
 5...Kf7
 6. Bc4+
-6...Kg6?? If Black blunders (6...Kg6??), then White can mate quickly (7.Qf5+).
+6...Kg6?? If Black blunders (6...Kg6??), then White can mate quickly, although it's still work (e.g. 7.Qf5+ Kh6 8.d3 then either the blunder 8...Qg5 9.Qxg5# or the slower one shown here, where Black throws everything to survive).
 7. Qf5+
 7...Kh6
 8. d3
 8...Qg5
 9. Qg5#
+8...g5
+9. h4
+9...Be7
+10. f4
+10...Kh5
+11. g4
+11...Kh6
+12. fxg5
+12...Bxg5
+13. hxg5+
+13...Kg7
+14. Qf7#
 6...d5! Black can avoid the blunder and sacrifice another pawn, and the deadly attack continues (4.Qh5+ Ke7 5.Qxe5+ Kf7 6.Bc4+ d5! 7.Bxd5+ Kg6), and now Black is down three pawns for one piece.
 7. Bxd5+
 7...Kg6 <strong>branching</strong>
@@ -77,7 +89,7 @@
 4. Nf3 So the best move for White is to retreat the Knight (4.Nf3 Qxe4+ 5.Be2) and Black regains the pawn but has lost time and weakened his kingside, and will lose more time when White chases the queen with Nc3, or 0-0, Re1, and a move by the bishop on e2. <strong>branching</strong>
 4...Qxe4+
 5. Be2
-4...d5 Another alternative for Black is pawn to d5 and then White had a small advantage (4...d5 5.d3 dxe4 6.dxe4).
+4...d5 Another alternative for Black instead of regaining the pawn immediately on e4 is pawn to d5 and then White had a small advantage (4...d5 5.d3 dxe4 6.dxe4).
 5. d3
 5...dxe4
 6. dxe4

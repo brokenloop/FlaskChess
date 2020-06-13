@@ -1,13 +1,14 @@
-1. e4
-1...e6 After 1.e4, Black can play a semi-open defense instead of 1...e5. Openings such as the French Defense (1...e6) or the Scandinavian Defense (1...d5) render Scholar's Mate unviable, while other openings such as the Sicilian Defense (1...c5) make 2.Bc4 a bad move (1.e4 c5 2.Bc4? e6, intending ...d5, gaining time by attacking the c4-bishop and attaining easy equality).
+
+1. e4 After 1.e4, Black can play a semi-open defense instead of 1...e5. Openings such as the French Defense (1...e6) or the Scandinavian Defense (1...d5) render Scholar's Mate unviable, while other openings such as the Sicilian Defense (1...c5) make 2.Bc4 a bad move (1.e4 c5 2.Bc4? e6, intending ...d5, gaining time by attacking the c4-bishop and attaining easy equality).
+1...e6
 1...d5
 1...c5
 2. Bc4?
 2...e6
 1...e5 The scholar's mate starts as the Open Game (1. e4 e5)
-2. Bc4 The most common response to the Bishop's Opening (1.e4 e5 2.Bc4) is 2...Nf6 (see Bishop's Opening, Berlin Defense), which also renders Scholar's Mate unviable.
-2...Nf6
-2...Bc5 If Black played 2...Bc5 instead of 2...Nc6, then 3...g6?? is a blunder because it doesn't defend the e5-pawn (Black loses the king rook to 4.Qxe5+ followed by 5.Qxh8).
+2. Bc4
+2...Nf6 The most common response to the Bishop's Opening (1.e4 e5 2.Bc4) is 2...Nf6 (see Bishop's Opening, Berlin Defense), which also renders Scholar's Mate unviable because the Knight defends the h5 square.
+2...Bc5 If Black played 2...Bc5 instead of 2...Nc6, then 3...g6?? (the cleanest way to defend against the Scholar's mate) is a blunder because 2...Nc6 protects the e5-pawn and 2...Bc5 does not (Black loses the king rook to 4.Qxe5+ followed by 5.Qxh8).
 3. Qh5
 3...g6
 4. Qxe5+
