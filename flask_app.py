@@ -123,23 +123,33 @@ def mainline_to_html_pgn(mainline):
 
     return "".join(output)
 
-def next_move():
+
+def start_position():
+    pgn = io.StringIO("")
+    game = chess.pgn.read_game(pgn)
+    board = game.board()
+    return board.fen()
+
+
+# TODO: refactor this into a state function, so it works well
+# with GAME_LINE = 22
+
+def next_move(increment = 1):
     global GAME_LINE, GAME_MOVES, MOVE_MAINLINE, REWOUND
 
-    GAME_LINE += 1
-    line = GAME_MOVES[GAME_LINE]
+    GAME_LINE += increment
 
     if 0 > GAME_LINE:
         print("already at beginning!")
-        return None
+        return "position\n" + start_position()
 
     if len(GAME_MOVES) <= GAME_LINE:
         print("at end of game!")
         return "finished"
 
-    # Games from macOS have a unique line
-    print(line)
-    print(MACOS_GAME)
+    line = GAME_MOVES[GAME_LINE]
+
+    # Games from macOS have a unique line of play
     if MACOS_GAME:
         action = "move"
         return "\n".join([action, line])
@@ -170,10 +180,12 @@ def next_move():
 
     move_place = move_number * 2 - white - 1
 
+    print("Current game line = %d, line = %s, move_place = %d " % (GAME_LINE, line, move_place))
+    
     # Add this move to the game history
     action = "position"
-    if len(MOVE_MAINLINE) > move_place:
-        # Rewind
+    if len(MOVE_MAINLINE) > move_place and 0 < increment:
+        # Rewind from the text (not from "previous" button)
         MOVE_MAINLINE = MOVE_MAINLINE[:move_place]
 
         if not REWOUND:
@@ -188,11 +200,12 @@ def next_move():
             new_move = str(move_number) + ". " + pure_move
         else:
             new_move = " " + pure_move
+        print(new_move)
         
         MOVE_MAINLINE.append(new_move)
 
     # Compute the board's position from python-chess
-    print(" ".join(MOVE_MAINLINE))
+    print("PGN = " + " ".join(MOVE_MAINLINE))
     pgn = io.StringIO(" ".join(MOVE_MAINLINE))
     game = chess.pgn.read_game(pgn)
     board = game.board()
@@ -212,6 +225,12 @@ def next():
 @app.route('/previous/')
 def previous_move():
     return next_move(-1)
+
+@app.route("/reset")
+def reset():
+    global GAME_LINE
+    GAME_LINE = -1
+    return next_move()
 """
 
 @app.route('/test/<string:tester>')

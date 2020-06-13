@@ -132,8 +132,7 @@ var setStatus = function(status) {
   document.getElementById("status").innerHTML = status;
 }
 
-var nextMove = function() {
-  $.get($SCRIPT_ROOT + "/next/", function(data) {
+var update = function(data) {
 
     console.log("Data from server = " + data);
 
@@ -150,7 +149,7 @@ var nextMove = function() {
       // This is important, otherwise the board does not update
       // and the author mentions "I should be ashamed of this"
       setTimeout(function(){ board.position(game.fen()); }, 100);
-    } else if ("position" === action) {
+    } else if (["position", "rewind"].includes(action)) {
       
       // Find the FEN in line 2
       fen = lines[1]
@@ -171,7 +170,18 @@ var nextMove = function() {
       alert("Unknown action!")
     }
     $('#notes').html(notes);
-  })
+}
+
+var nextMove = function() {
+  $.get($SCRIPT_ROOT + "/next/", update)
+}
+
+var previousMove = function() {
+  $.get($SCRIPT_ROOT + "/previous/", update)
+}
+
+var reset = function() {
+  $.get($SCRIPT_ROOT + "/reset/", update)
 }
 
 var getCapturedPieces = function() {
