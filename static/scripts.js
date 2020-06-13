@@ -142,13 +142,6 @@ var update = function(data) {
 
     if ("finished" === action) {
       notes = "<h1>Finished</h1>" + lines[1];
-    } else if ("move" === action) {
-      move = lines[1]
-      game.move(move, {sloppy: true});
-      updateStatus();
-      // This is important, otherwise the board does not update
-      // and the author mentions "I should be ashamed of this"
-      setTimeout(function(){ board.position(game.fen()); }, 100);
     } else if (["position", "rewind"].includes(action)) {
       
       // Find the FEN in line 2
@@ -162,10 +155,12 @@ var update = function(data) {
 
       $('#moves').html(moves)
       var rewind = ""
-      /*
+      
       if ("rewind" === action) {
-        notes = "Rewind";
-      }*/
+        $('#rewind').show()
+      } else {
+        $('#rewind').hide()
+      }
     } else {
       alert("Unknown action!")
     }

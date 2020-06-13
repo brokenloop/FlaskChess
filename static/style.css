@@ -41,3 +41,13 @@ div.container {
 div#notes{
   font-size: 1.5em;
 }
+
+div#rewind{
+  float: right;
+  width: 40px;
+  display:none;
+}
+
+div#rewind img {
+  width:100%;
+}

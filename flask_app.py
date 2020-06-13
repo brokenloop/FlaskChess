@@ -22,6 +22,7 @@ REWOUND = False
 global FILEPATH
 
 POSITION = "position"
+REWIND = "rewind"
 
 NOTES_KEY = "notes"
 HALF_MOVE_KEY = "half-move"
@@ -91,28 +92,6 @@ def load_game(fp):
 # Functions for PGN games
 #
 #
-
-"""
-def pgn_to_mpgn(moves):
-    "Converts a game from pure PGN to my PGN.
-    
-    >>> pgn = "".join(["1.e4 e5", "2.d4"])
-    >>> mpgn = ["1. e4", "1...e5", "2. d4"]
-    >>> mpgn == pgn_to_mpgn(pgn)
-    True
-    "
-    
-    lines = moves.split("\n")
-
-    mpgn = []
-    for line in lines:
-        fields = line.split(" ")
-        mpgn.append(fields[0] + " " + fields[1])
-
-        if 2 < len(fields):
-            mpgn.append(fields[0] + ".." + fields[2])
-    return mpgn
-"""
 
 def uci_moves_to_state(moves, current_line):
     board = chess.Board()
@@ -230,6 +209,13 @@ def mpgn_to_mainline(mpgn, current_line):
     """
     mainline = []
     last_branch_length = 0
+
+    # If the game went over, truncate the line
+    if current_line >= len(mpgn):
+        current_line = len(mpgn) - 1
+        global CURRENT_LINE
+        CURRENT_LINE = current_line
+        
     for source_line in range(1 + current_line):
         line = mpgn[source_line]
         half_move = parse_mpgn_line(line)[HALF_MOVE_KEY]
@@ -270,8 +256,6 @@ def mpgn_moves_to_state(mpgn_moves):
     for i in range(len(mainline)):
         details = parse_mpgn_line(mainline[i])
         half_move = details[HALF_MOVE_KEY]
-        print("half-move")
-        print(half_move)
         if not FINISHED == half_move:
             if 0 == half_move % 2:
                 move = str(1 + half_move // 2) + "."
@@ -283,12 +267,15 @@ def mpgn_moves_to_state(mpgn_moves):
         if "" != notes:
             last_notes = notes
 
-    pgn = io.StringIO("".join(san_history))
-    game = chess.pgn.read_game(pgn)
-    board = game.board()
-    for move in game.mainline_moves():
-        board.push(move)
-    
+    if 0 <= CURRENT_LINE:
+        pgn = io.StringIO("".join(san_history))
+        game = chess.pgn.read_game(pgn)
+        board = game.board()
+        for move in game.mainline_moves():
+            board.push(move)
+    else:
+        board = chess.Board()
+            
     print(last_notes)
     return board.fen(), san_history, last_notes
 
@@ -299,7 +286,6 @@ def state():
 
     moves = load_game(FILEPATH)
 
-    print("current line = %d" % CURRENT_LINE)
     if MACOS_GAME:
         fen, san_history = uci_moves_to_state(moves, CURRENT_LINE)
         last_notes = ""
@@ -307,66 +293,9 @@ def state():
         fen, san_history, last_notes = mpgn_moves_to_state(moves)
     
     san_html = san_history_to_html(san_history)
-    return "\n".join([POSITION, fen, san_html, last_notes])
+    action = REWIND if REWOUND else POSITION 
+    return "\n".join([action, fen, san_html, last_notes])
     
-
-# TODO: refactor this into a state function, so it works well
-# with CURRENT_LINE = 22
-
-"""
-def next_move(increment = 1):
-    global CURRENT_LINE, GAME_MOVES, MOVE_MAINLINE, REWOUND
-
-    CURRENT_LINE += increment
-
-    line = GAME_MOVES[CURRENT_LINE]
-
-    # Games from macOS have a unique line of play
-    if MACOS_GAME:
-        action = "move"
-        return "\n".join([action, line])
-
-
-
-    # Find the pure move and notes
-    start_index = dot_index
-
-    print("Current game line = %d, line = %s, move_place = %d " % (CURRENT_LINE, line, move_place))
-    
-    # Add this move to the game history
-    action = "position"
-    if len(MOVE_MAINLINE) > move_place and 0 < increment:
-        # Rewind from the text (not from "previous" button)
-        MOVE_MAINLINE = MOVE_MAINLINE[:move_place]
-
-        if not REWOUND:
-            REWOUND = True
-            CURRENT_LINE -= 1
-            action = "rewind"
-    else:
-        REWOUND = False
-
-    if not REWOUND:
-        if white:
-            new_move = str(move_number) + ". " + pure_move
-        else:
-            new_move = " " + pure_move
-        print(new_move)
-        
-        MOVE_MAINLINE.append(new_move)
-
-    # Compute the board's position from python-chess
-    print("PGN = " + " ".join(MOVE_MAINLINE))
-    pgn = io.StringIO(" ".join(MOVE_MAINLINE))
-    game = chess.pgn.read_game(pgn)
-    board = game.board()
-    for move in game.mainline_moves():
-        board.push(move)  # to update and render the board
-    answer = [action, board.fen(), mainline_to_html_pgn(MOVE_MAINLINE)]
-    if notes:
-        answer.append(notes)
-    return "\n".join(answer)
-"""                     
 
 @app.route('/next')
 def next():
@@ -386,7 +315,7 @@ def previous_move():
 @app.route("/reset")
 def reset(line = -1):
     global CURRENT_LINE
-    CURRENT_LINE = 24
+    CURRENT_LINE = line
     return state()
 
 
