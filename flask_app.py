@@ -1,4 +1,6 @@
 import io
+import glob
+import os
 import subprocess
 import sys
 
@@ -7,6 +9,8 @@ from flask import Flask, render_template
 #from chess_engine import *
 
 app = Flask(__name__)
+
+DOWNLOADS = os.path.expanduser("~/Downloads")
 
 global GAME_LINE
 GAME_LINE = -1
@@ -18,6 +22,8 @@ MOVE_SPLITTER = " ** "
 
 global REWOUND
 REWOUND = False
+
+global MACOS_GAME
 
 @app.route('/')
 def index():
@@ -46,12 +52,38 @@ def load_game(fp):
 
     moves = contents[start_index:end_index].strip().split("\n")
 
+    """
     position = contents.find("<key>Position</key>")
     start_index = contents.find(start_cue, start_index) + len(start_cue)
     end_index = contents.find(end_cue, start_index)
     position = contents[start_index:end_index].strip()
-    
     return moves, position
+    """
+
+    return moves
+
+"""
+    # code to turn macOS into PGN
+    output = []
+    move_number = 1
+    white = True
+    for move in moves:
+        prefix = str(move_number)
+        if white:
+            prefix += ". "
+        else:
+            prefix += "..."
+            move_number += 1
+        white = not white
+        output.append(prefix + move)
+    
+    return output
+"""
+
+
+def load_moves_from_downloads():
+    game_fp = get_game_in_downloads()
+    return load_game(game_fp)
 
 
 def load_pgn_pure(fp):
@@ -105,6 +137,14 @@ def next_move():
         print("at end of game!")
         return "finished"
 
+    # Games from macOS have a unique line
+    print(line)
+    print(MACOS_GAME)
+    if MACOS_GAME:
+        action = "move"
+        return "\n".join([action, line])
+
+
     # Compute the place of this half-move
     dot_index = line.index(".")
     move_number_str = line[:dot_index]
@@ -128,12 +168,10 @@ def next_move():
         pure_move = line[start_index:end_index]
         notes = line[(end_index + 1):]
 
-    print(notes)
-
     move_place = move_number * 2 - white - 1
 
     # Add this move to the game history
-    action = "move"
+    action = "position"
     if len(MOVE_MAINLINE) > move_place:
         # Rewind
         MOVE_MAINLINE = MOVE_MAINLINE[:move_place]
@@ -184,13 +222,16 @@ def test_get(tester):
 if __name__ == '__main__':
 
     global GAME_MOVES
+    global MACOS_GAME
 
     # If an argument was given, use that as the filename
     if 2 <= len(sys.argv):
         fp = sys.argv[1]
         GAME_MOVES = load_mpgn(fp)
+        MACOS_GAME = False
     else:
         GAME_MOVES = load_moves_from_downloads()
+        MACOS_GAME = True
 
     print(GAME_MOVES)
 

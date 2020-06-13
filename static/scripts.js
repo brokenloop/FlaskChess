@@ -42,8 +42,9 @@ var updateStatus = function() {
   setStatus(status);
   getLastCapture();
   createTable();
-  updateScroll();
+  //updateScroll();
 
+  console.log(game.fen());
   statusEl.html(status);
   fenEl.html(game.fen());
   pgnEl.html(game.pgn());
@@ -132,7 +133,6 @@ var setStatus = function(status) {
 }
 
 var nextMove = function() {
-  console.log("next move!");
   $.get($SCRIPT_ROOT + "/next/", function(data) {
 
     console.log("Data from server = " + data);
@@ -143,7 +143,14 @@ var nextMove = function() {
 
     if ("finished" === action) {
       notes = "<h1>Finished</h1>" + lines[1];
-    } else {
+    } else if ("move" === action) {
+      move = lines[1]
+      game.move(move, {sloppy: true});
+      updateStatus();
+      // This is important, otherwise the board does not update
+      // and the author mentions "I should be ashamed of this"
+      setTimeout(function(){ board.position(game.fen()); }, 100);
+    } else if ("position" === action) {
       
       // Find the FEN in line 2
       fen = lines[1]
@@ -160,6 +167,8 @@ var nextMove = function() {
       if ("rewind" === action) {
         notes = "Rewind";
       }*/
+    } else {
+      alert("Unknown action!")
     }
     $('#notes').html(notes);
   })
