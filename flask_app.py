@@ -129,10 +129,11 @@ def san_history_to_html(san_history):
     """Converts a history of moves in Standard Algebraic Notation (SAN) to HTML that
     can be displayed.
 
-    This is for use for chess games from macOS, because those from MPGN have input like
-    ['0.0.e4', 'e5', '1.0.Bc4', 'Bc5', '2.0.Qh5', 'g6']
+    This is for use for chess games from macOS, because those from MPGN already have move numbers.
 
-    >>> "1. e4 e5<br/>2. Nc3" == san_history_to_html(["e4", "e5", "Nc3"])
+    >>> "1.e4 e5<br/>2.Nc3" == san_history_to_html(["e4", "e5", "Nc3"])
+    True
+    >>> "1.e4 e5<br/>2.Nc3" == san_history_to_html(["1.e4", "e5", "2.Nc3"])
     True
     """
     output = []
@@ -143,10 +144,13 @@ def san_history_to_html(san_history):
         if white:
             if 0 < i:
                 output.append("<br/>")
-            output.append(str(move_number) + ".")
+            prefix = str(move_number) + "."
+            if not line.startswith(prefix):
+                output.append(prefix)
         else:
+            output.append(" ")
             move_number += 1
-        output.append(" " + line)
+        output.append("" + line)
 
     return "".join(output)
 
@@ -226,12 +230,13 @@ def mpgn_to_mainline(mpgn, current_line):
     """
     mainline = []
     last_branch_length = 0
-    last_notes = ""
     for source_line in range(1 + current_line):
         line = mpgn[source_line]
         half_move = parse_mpgn_line(line)[HALF_MOVE_KEY]
-        
-        if len(mainline) <= half_move:
+
+        if FINISHED == half_move:
+            pass
+        elif len(mainline) <= half_move:
             last_branch_length += 1
         else:
             mainline = mainline[:half_move]
@@ -240,12 +245,23 @@ def mpgn_to_mainline(mpgn, current_line):
     return mainline, last_branch_length
 
 
-def mpgn_moves_to_state(mpgn_moves, current_line):
+def mpgn_moves_to_state(mpgn_moves):
 
+    global CURRENT_LINE, REWOUND
+    
     # Find mainline
-    mainline, last_branch_length = mpgn_to_mainline(mpgn_moves, current_line)
+    mainline, last_branch_length = mpgn_to_mainline(mpgn_moves, CURRENT_LINE)
 
     # TODO: add rewinding with length of last_branch_length
+    if 0 < CURRENT_LINE and 1 == last_branch_length:
+        # This is a rewind. Have we already shown the rewind?
+        if REWOUND:
+            # reset for next branch
+            REWOUND = False
+        else:
+            REWOUND = True
+            CURRENT_LINE -= 1
+            mainline = mainline[:-1]
 
     # Iterate on mainline to produce a game in SAN
     last_notes = ""
@@ -254,24 +270,26 @@ def mpgn_moves_to_state(mpgn_moves, current_line):
     for i in range(len(mainline)):
         details = parse_mpgn_line(mainline[i])
         half_move = details[HALF_MOVE_KEY]
-        if FINISHED == half_move:
-            finished = True
-        else:
-            move = ""
+        print("half-move")
+        print(half_move)
+        if not FINISHED == half_move:
             if 0 == half_move % 2:
-                move += str(half_move / 2) + "."
+                move = str(1 + half_move // 2) + "."
+            else:
+                move = " "
             move += details[PURE_MOVE_KEY]
             san_history.append(move)
         notes = details[NOTES_KEY]
         if "" != notes:
             last_notes = notes
 
-    pgn = io.StringIO(" " .join(san_history))
+    pgn = io.StringIO("".join(san_history))
     game = chess.pgn.read_game(pgn)
     board = game.board()
     for move in game.mainline_moves():
         board.push(move)
     
+    print(last_notes)
     return board.fen(), san_history, last_notes
 
 
@@ -281,22 +299,15 @@ def state():
 
     moves = load_game(FILEPATH)
 
-    if len(moves) <= CURRENT_LINE:
-        print("at end of game!")
-        return "finished"
-
+    print("current line = %d" % CURRENT_LINE)
     if MACOS_GAME:
         fen, san_history = uci_moves_to_state(moves, CURRENT_LINE)
-        print(san_history)
-        san_html = san_history_to_html(san_history)
-        print(san_html)
-        return "\n".join([POSITION, fen, san_html])
+        last_notes = ""
     else:
-        fen, san_history, last_notes = mpgn_moves_to_state(moves, CURRENT_LINE)
-        san_html = san_history_to_html(san_history)
-        print(san_history)
-        print(san_html)
-        return "\n".join([POSITION, fen, san_html, last_notes])
+        fen, san_history, last_notes = mpgn_moves_to_state(moves)
+    
+    san_html = san_history_to_html(san_history)
+    return "\n".join([POSITION, fen, san_html, last_notes])
     
 
 # TODO: refactor this into a state function, so it works well
@@ -374,9 +385,8 @@ def previous_move():
 # TODO: add GET parameter for ability to set the line
 @app.route("/reset")
 def reset(line = -1):
-    print("reset!")
     global CURRENT_LINE
-    CURRENT_LINE = line
+    CURRENT_LINE = 24
     return state()
 
 
@@ -387,11 +397,7 @@ def test_get(tester):
 
 if __name__ == '__main__':
 
-    single_line = ["1. e4", "1...e5", "2. Nc3"]
-    double_line = single_line + ["1...c5"]
-    result, branch_length = mpgn_to_mainline(double_line, 3)
-    print(result)
-    print(branch_length)
+    print(san_history_to_html(["1.e4", "e5", "2.Nc3"]))
 
     doctests = doctest.testmod()
     assert 0 == doctests.failed, "Some doc-tests failed, exiting..."
