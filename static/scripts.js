@@ -173,15 +173,15 @@ var update = function(data) {
 }
 
 var nextMove = function() {
-  $.get($SCRIPT_ROOT + "/next/", update)
+  $.get($SCRIPT_ROOT + "/next", update)
 }
 
 var previousMove = function() {
-  $.get($SCRIPT_ROOT + "/previous/", update)
+  $.get($SCRIPT_ROOT + "/previous", update)
 }
 
-var reset = function() {
-  $.get($SCRIPT_ROOT + "/reset/", update)
+var resetMoves = function() {
+  $.get($SCRIPT_ROOT + "/reset", update)
 }
 
 var getCapturedPieces = function() {
