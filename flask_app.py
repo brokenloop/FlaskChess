@@ -2,6 +2,7 @@ import io
 import doctest
 import glob
 import os
+import re
 import subprocess
 import sys
 
@@ -20,6 +21,8 @@ global REWOUND
 REWOUND = False
 
 global FILEPATH
+
+OPENINGS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "openings")
 
 POSITION = "position"
 REWIND = "rewind"
@@ -46,6 +49,13 @@ def get_game_in_downloads():
     games = glob.glob(os.path.join(DOWNLOADS, "*.game"))
     assert 1 == len(games)
     return games[0]
+
+
+def get_openings(stub):
+    """Get the opening that matches this stub.
+    """
+    games = [os.path.join(OPENINGS, f) for f in os.listdir(OPENINGS) if f.lower().startswith(stub.lower())]
+    return games
 
 
 def load_macos_game(fp):
@@ -238,7 +248,6 @@ def mpgn_moves_to_state(mpgn_moves):
     # Find mainline
     mainline, last_branch_length = mpgn_to_mainline(mpgn_moves, CURRENT_LINE)
 
-    # TODO: add rewinding with length of last_branch_length
     if 0 < CURRENT_LINE and 1 == last_branch_length:
         # This is a rewind. Have we already shown the rewind?
         if REWOUND:
@@ -267,7 +276,7 @@ def mpgn_moves_to_state(mpgn_moves):
         if "" != notes:
             last_notes = notes
 
-    if 0 <= CURRENT_LINE:
+    if 0 <= CURRENT_LINE and bool(san_history):
         pgn = io.StringIO("".join(san_history))
         game = chess.pgn.read_game(pgn)
         board = game.board()
@@ -276,7 +285,6 @@ def mpgn_moves_to_state(mpgn_moves):
     else:
         board = chess.Board()
             
-    print(last_notes)
     return board.fen(), san_history, last_notes
 
 
@@ -326,18 +334,22 @@ def test_get(tester):
 
 if __name__ == '__main__':
 
-    print(san_history_to_html(["1.e4", "e5", "2.Nc3"]))
-
     doctests = doctest.testmod()
     assert 0 == doctests.failed, "Some doc-tests failed, exiting..."
 
     global FILEPATH
 
-    # If an argument was given, use that as the filepath
-    if 2 <= len(sys.argv):
-        FILEPATH = sys.argv[1]
-    else:
+
+    if 2 > len(sys.argv):
         FILEPATH = get_game_in_downloads()
+    else:
+        # If an argument was given, use that as the filepath, possibly with completion
+        FILEPATH = sys.argv[1]
+        if not os.path.exists(FILEPATH):
+            games = get_openings(FILEPATH)
+            print("Games = " + str(games))
+            assert 1 == len(games), "Ambiguous filepath: %s, games matched = %d" % (sys.argv[1], len(games))
+            FILEPATH = games[0]
 
     subprocess.check_output("open -a Safari http://localhost:5000/", shell=True)
     app.run(debug=True)
