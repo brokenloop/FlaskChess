@@ -1,0 +1,63 @@
+1. f3 In chess, Fool's Mate, also known as the Two-Move Checkmate, is the checkmate delivered after the fewest possible moves since the start of the game. It can be achieved only by Black, who can deliver checkmate on move 2 with the queen. Fool's Mate received its name because it can only occur if White commits an extraordinary blunder. Even among rank beginners, this type of checkmate almost never occurs in practice. The pattern can have slight variations; Black could play ...e6 or ...e5, and White could play f4 rather than f3. Additionally, the order in which White advances their f- and g-pawns could be alternated. 
+1...e5
+2. g4
+2...Qh4#
+1. e4 Similar mating patterns can occur early in the game. For example, in 1. e4 g5 2. d4 f6?? 3. Qh5#, the basic Fool's Mate pattern is the same: a player advances their f- and g-pawns, which permits the enemy queen to mate along the unblocked diagonal.
+1...g5
+2. d4
+2...f6??
+3. Qh5#
+2. Nc3 One such Fool's Mate is widely reported to have occurred in a possibly apocryphal 1959 game between Masefield and Trinka which lasted just three moves: 1. e4 g5 2. Nc3 f5?? 3. Qh5#.
+2...f5??
+3. Qh5#
+1. f4 A similar mate can occur in From's Gambit: 1. f4 e5 2. g3? exf4 3. gxf4?? Qh4#.
+1...e5
+2. g3?
+2...exf4
+3. gxf4??
+3...Qh4#
+1. d4  A well-known trap in the Dutch Defence (1. d4 f5) occurred in the game Frank Melville Teed–Eugene Delmar, 1896.
+1...f5
+2. Bg5
+2...h6
+3. Bh4
+3...g5
+4. Bg3
+4...f4
+5. e3 It seems that Black has won the bishop, but now comes 5. e3, threatening Qh5#, a basic Fool's Mate.
+5... h5
+6. Bd3?! Probably better is 6.Be2, but the move played sets a trap.
+6... Rh6?? Defending against Bg6#, but White sacrifices his queen to draw the black rook away from its control of g6.
+7. Qxh5+!
+7... Rxh5
+8. Bg6#
+1. e4 A similar trap occurred in a game published by Gioachino Greco in 1625.
+1...b6 This opening (1.e4 b6) is called Owen's Defence today.
+2. d4
+2...Bb7
+3. Bd3
+3...f5?
+4. exf5
+4...Bxg2?
+5. Qh5+
+5...g6
+6. fxg6
+6...Nf6??
+7. gxh7+!
+7...Nxh5
+8. Bg6#
+6...Bg7 Opening up a flight square for the king at f8 with 6...Bg7 would have prolonged the game. White still wins with 7.Qf5! Nf6 8.Bh6 Bxh6 9.gxh7 Bxh1 (9...e6 opens another flight square at e7; then White checks with 10.Qg6+ Ke7) 10.Qg6+ Kf8 11.Qxh6+ Kf7 12.Nh3, but much slower than in the game.
+7.Qf5!
+7...Nf6
+8.Bh6
+8...Bxh6
+9.gxh7
+9...e6
+10.Qg6+
+10...Ke7
+9...Bxh1
+10. Qg6+
+10...Kf8
+11. Qxh6+
+11...Kf7
+12. Nh3
