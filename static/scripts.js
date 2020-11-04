@@ -86,7 +86,7 @@ var randomResponse = function() {
     fen = game.fen()
     $.get($SCRIPT_ROOT + "/move/" + fen, function(data) {
         game.move(data, {sloppy: true});
-//        board.position(game.fen());
+        // board.position(game.fen());
         updateStatus();
     })
 }
@@ -109,21 +109,19 @@ var getResponseMove = function() {
 // http://stackoverflow.com/questions/29493624/cant-display-board-whereas-the-id-is-same-when-i-use-chessboard-js
 setTimeout(function() {
     board = ChessBoard('board', cfg);
-//    updateStatus();
+    // updateStatus();
 }, 0);
 
 
 var setPGN = function() {
   var table = document.getElementById("pgn");
-
   var pgn = game.pgn().split(" ");
-    var move = pgn[pgn.length - 1];
+  var move = pgn[pgn.length - 1];
 }
 
 var createTable = function() {
 
     var pgn = game.pgn().split(" ");
-
     var data = [];
 
     for (i = 0; i < pgn.length; i += 3) {
@@ -146,12 +144,12 @@ var createTable = function() {
         }
     }
 
-    $('#pgn tr').not(':first').not(':last').remove();
+    $('#pgn tr').not(':first').remove();
     var html = '';
     for (var i = 0; i < data.length; i++) {
-                html += '<tr><td>' + data[i].moveNumber + '</td><td>'
-                + data[i].whiteMove + '</td><td>'
-                + data[i].blackMove + '</td></tr>';
+        html += '<tr><td>' + data[i].moveNumber + '</td><td>'
+        + data[i].whiteMove + '</td><td>'
+        + data[i].blackMove + '</td></tr>';
     }
 
     $('#pgn tr').first().after(html);
@@ -193,11 +191,7 @@ var getLastCapture = function() {
     var history = game.history({ verbose: true });
     var index = history.length - 1;
 
-    if ("captured" in history[index]) {
+    if (history[index] != undefined && "captured" in history[index]) {
         console.log(history[index]["captured"]);
     }
 }
-
-
-
-
